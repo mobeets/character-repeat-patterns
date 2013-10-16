@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>English character repeat patterns</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+    <script type="text/javascript" src="../d3/d3.v2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="d3.bar.css"/>
+    <link rel="stylesheet" type="text/css" href="d3.slider.css"/>
+  </head>
+  <body>
+    <div id="chart"></div>
+    <br>
+    Filter by word length:
+    <br><br>
+    <div id="slider"></div><br>
+    <br>
+    
+    <!-- <div id="button-wrapper" data-sort-method="frequency">
+        <button id="button" type="button">Sort by frequency</button>
+    </div> -->
+    <!-- <input type="checkbox">Sort by frequency -->
+
+    <br>
+    Sort by: 
+    <input id="sorting" type="radio" name="sorting" value="freq"> frequency
+    <input id="sorting" type="radio" name="sorting" value="nchars"> word length
+    <input id="sorting" type="radio" name="sorting" value="pattern" checked> name
+    <br>
+
+    <script type="text/javascript" src="d3.slider.js"></script>
+    <script type="text/javascript" src="d3.bar.js"></script>
+  </body>
+</html>

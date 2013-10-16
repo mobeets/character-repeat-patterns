@@ -1,0 +1,45 @@
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: 12px sans-serif;
+  position: relative;
+  width: 960px;
+}
+
+.axis text {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.bar {
+  fill: steelblue;
+  fill-opacity: .9;
+}
+
+.x.axis path {
+  display: none;
+}
+
+label {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+#chart {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  position: relative;
+  width: 960px;
+}
+
+#slider {
+    position: relative;
+    left: 20px;
+    width: 500px;
+    height: 10px;
+}

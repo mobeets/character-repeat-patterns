@@ -6,7 +6,7 @@ var margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = 600 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
-var formatPercent = d3.format(".0");
+var formatter = d3.format(".0");
 
 var x = d3.scale.ordinal()
     .rangeRoundBands([0, width], .3, .3);
@@ -21,7 +21,11 @@ var xAxis = d3.svg.axis()
 var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left")
-    .tickFormat(formatPercent);
+    .tickFormat(formatter);
+
+var color = d3.scale.ordinal()
+    // .domain(["foo", "bar", "baz"])
+    .range(colorbrewer.PuOr[9]);
 
 var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -34,6 +38,8 @@ d3.csv("data.csv", function(data) {
 
   data.forEach(init_data);
   cur_data = filter_data(data, 0);
+  color.domain([d3.min(data, all_keys), d3.max(data, all_keys)]);
+
   d3_slider.on("slide", function(evt, value) {
     cur_data = filter_data(data, value);
     // change_sorting(false);
@@ -47,7 +53,14 @@ d3.csv("data.csv", function(data) {
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
+      .call(xAxis)
+    .append("text")
+      // .attr("transform", "rotate(-90)")
+      .attr("x", 6)
+      .attr("y", 16)
+      // .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Pattern");
 
   svg.append("g")
       .attr("class", "y axis")
@@ -85,7 +98,7 @@ function change_sorting(to_by_value) {
   if (val == 'freq')
     sorter = sort_by_value;
   else if (val == 'nchars')
-    sorter = sort_by_value;
+    sorter = sort_by_group;
 
   var x0 = x.domain(cur_data.sort(sorter)
       .map(function(d) { return d.pattern; }))
@@ -135,6 +148,10 @@ function sort_by_name(a, b) {
   return d3.ascending(a.pattern, b.pattern);
 }
 
+function sort_by_group(a, b) {
+  return b.nchars - a.nchars;
+}
+
 function filter_data(data, val) {
   cur_data = data.filter(function(d) { return d.nchars == val || val == 0; });
   x.domain(cur_data.map(all_names));
@@ -155,6 +172,9 @@ function filter_data(data, val) {
 
   bar.transition()
     .duration(1000)
+    .attr("test1", function(d) { return d.nchars; })
+    .attr("test2", function(d) { return color(d.nchars); })
+    .style("fill", function(d) { return color(d.nchars); })
     .attr("x", function(d) { return x(d.pattern); })
     .attr("width", x.rangeBand())
     .attr("y", function(d) { return y(d.freq); })

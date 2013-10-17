@@ -6,29 +6,21 @@
     <script type="text/javascript" src="../d3/d3.v2.min.js"></script>
     <script src="../d3/lib/colorbrewer/colorbrewer.js"></script>
     <link rel="stylesheet" type="text/css" href="d3.bar.css"/>
-    <link rel="stylesheet" type="text/css" href="d3.slider.css"/>
   </head>
   <body>
     <div id="chart"></div>
     <br>
-    Filter by word length:
-    <br><br>
-    <div id="slider"></div><br>
-    <br>
+    <div id="dropdown_name"></div><div id="dropdown"></div><br>
     
-    <!-- <div id="button-wrapper" data-sort-method="frequency">
-        <button id="button" type="button">Sort by frequency</button>
-    </div> -->
-    <!-- <input type="checkbox">Sort by frequency -->
-
     <br>
     Sort by: 
-    <input id="sorting" type="radio" name="sorting" value="freq"> frequency
-    <input id="sorting" type="radio" name="sorting" value="nchars"> word length
-    <input id="sorting" type="radio" name="sorting" value="pattern" checked> name
+    <input id="sorting" type="radio" name="sorting" value="value"><div id="value_name" class="form_label"></div> 
+    <input id="sorting" type="radio" name="sorting" value="group"><div id="group_name" class="form_label"></div> 
+    <input id="sorting" type="radio" name="sorting" value="key" checked><div id="key_name" class="form_label"></div> 
     <br>
+    <div id="warnings"></div>
+    <br><br>
 
-    <script type="text/javascript" src="d3.slider.js"></script>
     <script type="text/javascript" src="d3.bar.js"></script>
   </body>
 </html>

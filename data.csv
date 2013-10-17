@@ -1,4 +1,4 @@
-nchars,freq,pattern
+group,val,key
 1,8,"B"
 2,2,"A"
 5,18,"C"

@@ -5,6 +5,11 @@ body {
   width: 960px;
 }
 
+.form_label {
+  display: inline;
+  padding-left: 2px;
+}
+
 .axis text {
   font: 10px sans-serif;
 }
@@ -31,6 +36,15 @@ label {
   right: 10px;
 }
 
+#dropdown {
+  float: left;
+}
+#dropdown_name {
+  clear: left;
+  padding-right: 10px;
+  float: left;
+}
+
 #chart {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   position: relative;
@@ -39,6 +53,7 @@ label {
 
 #slider {
     position: relative;
+    clear: both;
     left: 20px;
     width: 500px;
     height: 10px;

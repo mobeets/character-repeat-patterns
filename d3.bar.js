@@ -128,6 +128,7 @@ function change_dropdown() {
 function init_radios() {
   d3.selectAll("input")
     .on("change", function() { radio_val = this.value; resort_data(radio_val); });
+  d3.select("input[value=" + radio_val + "]").attr('checked', true);
 }
 
 function init_axes() {
@@ -152,13 +153,17 @@ function init_axes() {
       .text(y_axis_name);
 }
 
-function resort_data(val) {
-
+function get_sorter(val) {
   sorter = sort_data_by_key;
   if (val == 'value')
     sorter = sort_data_by_value;
   else if (val == 'group')
     sorter = sort_data_by_group;
+  return sorter;
+}
+
+function resort_data(val) {
+  sorter = get_sorter(val);
 
   // Copy-on-write since tweens are evaluated after a delay.
   var x0 = x.domain(cur_data.sort(sorter).map(get_key)).copy();
@@ -179,7 +184,8 @@ function resort_data(val) {
 function filter_data(val) {
   cur_data = all_data.filter(function(d) { return val == -1 || get_group(d) == val; });
 
-  x.domain(cur_data.map(get_key));
+  sorter = get_sorter(radio_val);
+  x.domain(cur_data.sort(sorter).map(get_key));
   svg.select(".x.axis").transition()
       .duration(200)
       .call(xAxis);
@@ -207,6 +213,4 @@ function filter_data(val) {
     .duration(100)
     .remove();
 
-  // setTimeout(2000, resort_data(radio_val));
-  // resort_data(radio_val);
 }

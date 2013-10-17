@@ -127,7 +127,7 @@ function change_dropdown() {
 
 function init_radios() {
   d3.selectAll("input")
-    .on("change", function() { radio_val = this.value; return resort_data(radio_val); });
+    .on("change", function() { radio_val = this.value; resort_data(radio_val); });
 }
 
 function init_axes() {
@@ -153,6 +153,7 @@ function init_axes() {
 }
 
 function resort_data(val) {
+
   sorter = sort_data_by_key;
   if (val == 'value')
     sorter = sort_data_by_value;
@@ -162,8 +163,8 @@ function resort_data(val) {
   // Copy-on-write since tweens are evaluated after a delay.
   var x0 = x.domain(cur_data.sort(sorter).map(get_key)).copy();
 
-  var transition = svg.transition().duration(750),
-      delay = function(d, i) { return i * 50; };
+  var transition = svg.transition().duration(400);
+  var delay = function(d, i) { return i * 50; };
 
   transition.selectAll(".bar")
       .delay(delay)
@@ -176,15 +177,16 @@ function resort_data(val) {
 }
 
 function filter_data(val) {
-  cur_data = all_data.filter(function(d) { return get_group(d) == val || val == -1; });
+  cur_data = all_data.filter(function(d) { return val == -1 || get_group(d) == val; });
+
   x.domain(cur_data.map(get_key));
   svg.select(".x.axis").transition()
-      .duration(1000)
+      .duration(200)
       .call(xAxis);
 
   y.domain([0, d3.max(cur_data, get_value)]);
   svg.select(".y.axis").transition()
-      .duration(1000)
+      .duration(200)
       .call(yAxis);
 
   bar = svg.selectAll(".bar").data(cur_data);
@@ -194,7 +196,7 @@ function filter_data(val) {
     .attr("class", "bar");
 
   bar.transition()
-    .duration(1000)
+    .duration(200)
     .style("fill", function(d) { return color(get_group(d)); })
     .attr("x", function(d) { return x(get_key(d)); })
     .attr("width", x.rangeBand())
@@ -205,5 +207,6 @@ function filter_data(val) {
     .duration(100)
     .remove();
 
+  // setTimeout(2000, resort_data(radio_val));
   // resort_data(radio_val);
 }

@@ -9,6 +9,10 @@ d3.selectAll('#key_name').text(x_axis_name);
 d3.selectAll('#value_name').text(y_axis_name);
 d3.selectAll('#group_name').text(color_axis_name);
 
+var margin = {top: 20, right: 20, bottom: 30, left: 40}
+var width = 600 - margin.left - margin.right;
+var height = 500 - margin.top - margin.bottom;
+
 function init_data(d) {
   d.group = +d.group;
   d.val = +d.val;
@@ -41,10 +45,6 @@ function sort_data_by_group(a, b) {
 function sort_group(a, b) {
   return a - b; // n.b. need to change if group values are not integers
 }
-
-var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    width = 600 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
 
 var formatter = d3.format(".0");
 

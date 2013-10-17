@@ -8,19 +8,24 @@
     <link rel="stylesheet" type="text/css" href="d3.bar.css"/>
   </head>
   <body>
-    <div id="chart"></div>
-    <br>
-    <div id="dropdown_name"></div><div id="dropdown"></div><br>
-    
-    <br>
-    Sort by: 
-    <input id="sorting" type="radio" name="sorting" value="value" checked><div id="value_name" class="form_label"></div> 
-    <input id="sorting" type="radio" name="sorting" value="group"><div id="group_name" class="form_label"></div> 
-    <input id="sorting" type="radio" name="sorting" value="key"><div id="key_name" class="form_label"></div> 
-    <br>
-    <div id="warnings"></div>
-    <br><br>
-
-    <script type="text/javascript" src="d3.bar.js"></script>
+    <div id="chart-wrapper">
+        <div id="chart"></div>
+        <br>
+        <div id="dropdown_name"></div>
+        <div id="dropdown"></div>
+        <br>
+        <br>
+        Sort by:
+        <input id="sorting" type="radio" name="sorting" value="value" checked>
+            <div id="value_name" class="form_label"></div>
+        <input id="sorting" type="radio" name="sorting" value="group">
+            <div id="group_name" class="form_label"></div>
+        <input id="sorting" type="radio" name="sorting" value="key">
+            <div id="key_name" class="form_label"></div>
+        <br>
+        <div id="warnings"></div>
+        <br>
+        <script type="text/javascript" src="d3.bar.js"></script>
+    </div>
   </body>
 </html>

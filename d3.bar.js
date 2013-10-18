@@ -4,10 +4,10 @@ var x_axis_name = 'pattern';
 var y_axis_name = 'frequency';
 var color_axis_name = 'word length';
 
-var margin = {top: 20, right: 20, bottom: 60, left: 40}
-var width = 600 - margin.left - margin.right;
+var margin = {top: 20, right: 20, bottom: 20, left: 40}
+var width = 900 - margin.left - margin.right;
 var height = 500 - margin.top - margin.bottom;
-var color_range = ["lightgray","blue"]; // http://www.w3.org/TR/SVG/types.html#ColorKeywords
+var color_range = ["skyblue","gainsboro"]; // http://www.w3.org/TR/SVG/types.html#ColorKeywords
 // var color_range = ["ghostwhite","steelblue"]; // http://www.w3.org/TR/SVG/types.html#ColorKeywords
 
 var formatter = d3.format(".0");
@@ -29,14 +29,17 @@ var yAxis = d3.svg.axis()
 
 var color = d3.scale.ordinal();
 
+var label_mult = 7; // how many pixels per letter in an x-label
+
 var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("height", height + margin.top + margin.bottom + label_mult*x_axis_name.length)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 var radio_val = 'value';
 var group_ind = 0;
+var dropdown_val;
 var groups;
 var all_data;
 var cur_data;
@@ -76,13 +79,36 @@ function init_dropdown() {
 function change_dropdown() {
   ind = this.selectedIndex;
   val = this.options[ind].value;
+  dropdown_val = val;
   filter_data(val);
 }
 
+function update_zero_values(data) {
+  remove_zeros = d3.select("input[name=nonzeros]")[0][0].checked;
+  if (remove_zeros)
+    return data.filter(function(d) { return get_value(d) > 0; });
+  return data;
+}
+
 function init_radios() {
-  d3.selectAll("input")
+  d3.selectAll("input[name=nonzeros]")
+    .on("change", function() { filter_data(dropdown_val); });
+  d3.selectAll("input[name=xlabels]")
+    .on("change", function() { filter_data(dropdown_val); });
+  d3.selectAll("input[name=sorting]")
     .on("change", function() { radio_val = this.value; resort_data(radio_val); });
   d3.select("input[value=" + radio_val + "]").attr('checked', true);
+}
+
+function max_x_label(data) {
+  m = 0
+  for (i in data){
+    v = get_key(data[i]);
+    v2 = String(v).length
+    if (v2 > m)
+      m = v2;
+  }
+  return hide_x_labels() ? 0 : d3.max([x_axis_name.length, m]);
 }
 
 function fix_x_axis(x) {
@@ -137,7 +163,7 @@ function resort_data(val) {
   var transition = svg.transition().duration(400);
   var delay = function(d, i) { return i * 50; };
 
-  fix_x_axis(transition.select(".x.axis").call(xAxis).selectAll("text").delay(50));
+  fix_x_axis(transition.select(".x.axis").call(xAxis).selectAll("text").delay(100));
 
   transition.selectAll(".bar")
       // .delay(delay)
@@ -145,8 +171,12 @@ function resort_data(val) {
       .attr("x", function(d) { return x0(get_key(d)); });
 }
 
+function hide_x_labels() {
+  return d3.select("input[name=xlabels]")[0][0].checked;
+}
 function filter_data(val, first_time) {
   cur_data = all_data.filter(function(d) { return val == -1 || get_group(d) == val; });
+  cur_data = update_zero_values(cur_data);
 
   sorter = get_sorter(radio_val);
   x.domain(cur_data.sort(sorter).map(get_key));
@@ -154,7 +184,7 @@ function filter_data(val, first_time) {
   if (first_time)
     init_axes();
   else {
-    fix_x_axis(svg.select(".x.axis").transition().duration(200).call(xAxis).selectAll("text"));
+    fix_x_axis(svg.select(".x.axis").transition().duration(200).call(xAxis).selectAll("text").delay(100));
   }
 
   y.domain([0, d3.max(cur_data, get_value)]);
@@ -163,7 +193,6 @@ function filter_data(val, first_time) {
       .call(yAxis);
 
   bar = svg.selectAll(".bar").data(cur_data);
-  // txt = svg.selectAll(".bar-label").data(cur_data);
 
   bar.enter()
     .append("rect")
@@ -171,20 +200,6 @@ function filter_data(val, first_time) {
     .on('mouseover', function(d){ d3.select(this).style("opacity", 1.0); })
     .on('mouseout', function(d){ d3.select(this).style("opacity", 0.5); })
     .attr("class", "bar");
-
-  // txt.enter()
-  //   .append("text")
-  //   .attr("class", "bar-label")
-  //   .style("opacity", 0.0)
-  //   .on('mouseover', function(d){ d3.select(this).style("opacity", 1.0) })
-  //   .on('mouseout', function(d){ d3.select(this).style("opacity", 0.0) })
-  //   .text(get_key);
-
-  // txt.transition()
-  //   .duration(200)
-  //   .attr("x", function(d) { return x(get_key(d)); })
-  //   .attr("y", function(d) { return y(get_value(d)); })
-  //   .attr("text-anchor", "start");
 
   bar.transition()
     .duration(200)
@@ -198,10 +213,16 @@ function filter_data(val, first_time) {
     .duration(100)
     .remove();
 
-  // txt.exit().transition()
-  //   .duration(100)
-  //   .remove();
-
+  if (hide_x_labels()){
+    svg.select(".x.axis").selectAll("line").style("opacity", 0.0);
+    svg.select(".x.axis").selectAll("text").style("opacity", 0.0);
+  }
+  else {
+    svg.select(".x.axis").selectAll("line").style("opacity", 1.0);
+    svg.select(".x.axis").selectAll("text").style("opacity", 1.0);
+  }
+  n = max_x_label(cur_data);
+  d3.select("svg").attr("height", height + margin.top + margin.bottom + n*label_mult);
 }
 
 function init_data(d) {
@@ -242,13 +263,25 @@ d3.selectAll('#key_name').text(x_axis_name);
 d3.selectAll('#value_name').text(y_axis_name);
 d3.selectAll('#group_name').text(color_axis_name);
 
-d3.csv(data_filename, function(data) {
+function get_json() {
+  $.getJSON("update", function(data) { render(data); });
+}
+
+function get_csv() {
+  d3.csv(data_filename, function(data) {render(data);});
+}
+
+function render(data) {
+  // data = data.filter(function(d) { return get_value(d) > 0; });
   all_data = data;
   all_data.forEach(init_data);
   groups = sorted_set(all_data, get_group, sort_group);
+  dropdown_val = groups[group_ind];
 
   set_colors_by_group();
   init_dropdown();
   init_radios();
-  filter_data(groups[group_ind], true);
-});
+  filter_data(dropdown_val, true);
+}
+
+get_csv();

@@ -2,7 +2,7 @@
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font: 12px sans-serif;
   position: relative;
-  width: 600px;
+  width: 900px;
   border:2px solid;
   padding: 10px;
 }
@@ -39,10 +39,6 @@
 
 .bar {
   fill-opacity: .9;
-}
-
-.bar-label {
-  font: 10px sans-serif;
 }
 
 .x.axis path {

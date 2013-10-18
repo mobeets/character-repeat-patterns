@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+ 
+.axis text {
+  font: 10px sans-serif;
+}
+ 
+.axis line,
+.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+</style>
+<body>
+<button onclick="update_x_axis();">Update</button>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+ 
+var margin = {top: 250, right: 40, bottom: 250, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var data = [0,1,2,3,4]; 
+var x = d3.scale.ordinal()
+    .rangeRoundBands([0, width], .3, .4);
+x.domain(data);
+
+var xAxis = d3.svg.axis()
+    .scale(x);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+svg.select(".x.axis")
+  .selectAll("text")
+    .attr("y", 0)
+    .attr("x", 9)
+    .attr("dy", ".35em")
+    .attr("transform", "rotate(90)")
+    .style("text-anchor", "start")
+    .attr("text-anchor", "start");
+    // .style("text-anchor", "start");
+
+// svg.select(".x.axis")
+//   .append("text")
+//     .attr("x", 40)
+//     .attr("y", 20)
+//     .style("text-anchor", "end")
+//     .text('hello');
+
+function update_x_axis() {
+  var transition = svg.transition().duration(400);
+  data = d3.shuffle(data);
+  x.domain(data);
+  transition.select(".x.axis")
+    .call(xAxis)
+
+  // svg.select(".x.axis")
+    .selectAll("text")
+      .attr("y", 0)
+      .attr("x", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "start");
+}
+ 
+</script>

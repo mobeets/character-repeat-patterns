@@ -1,5 +1,5 @@
 // https://github.com/mbostock/d3/wiki/API-Reference
-var data_filename = 'data.csv';
+var data_filename = 'eng_data.csv';
 var x_axis_name = 'pattern';
 var y_axis_name = 'frequency';
 var color_axis_name = 'word length';
@@ -12,6 +12,7 @@ d3.selectAll('#group_name').text(color_axis_name);
 var margin = {top: 20, right: 20, bottom: 30, left: 40}
 var width = 600 - margin.left - margin.right;
 var height = 500 - margin.top - margin.bottom;
+var color_range = ["ghostwhite","steelblue"]; // http://www.w3.org/TR/SVG/types.html#ColorKeywords
 
 function init_data(d) {
   d.group = +d.group;
@@ -72,17 +73,21 @@ var svg = d3.select("#chart").append("svg")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 var radio_val = 'value';
+var group_ind = 1;
+var groups;
 var all_data;
 var cur_data;
+
 d3.csv(data_filename, function(data) {
   all_data = data;
   all_data.forEach(init_data);
+  groups = sorted_set(all_data, get_group, sort_group);
 
-  set_colors_by_group(colorbrewer.Greens, 3, 9);
+  set_colors_by_group();
   init_axes();
   init_dropdown();
-  filter_data(-1);
   init_radios();
+  filter_data(groups[group_ind]);
 });
 
 function sorted_set(data, getter, sorter) {
@@ -96,15 +101,10 @@ function sorted_set(data, getter, sorter) {
   return group_list.sort(sorter);
 }
 
-function set_colors_by_group(colors_lookup, min_ncolors, max_ncolors) {
-  group_list = sorted_set(all_data, get_group, sort_group);
-  ncolors = group_list.length;
-  if (ncolors < min_ncolors || ncolors > max_ncolors){
-    d3.selectAll('#warnings').text('WARNING: There are ' + ncolors + ' groups in your data, but only 9 colors.');
-    ncolors = min(max(min_ncolors, ncolors), max_ncolors);
-  }
-  color.domain(group_list)
-    .range(colors_lookup[ncolors]);
+function set_colors_by_group() {
+  color = d3.scale.linear()
+    .domain([0, groups.length-1])
+    .range(color_range);
 }
 
 function init_dropdown() {
@@ -117,6 +117,9 @@ function init_dropdown() {
       .append("option")
         .attr("value", function(d){return d;}) /* Optional */
         .text(function(d){return d == -1 ? 'All': d;});
+
+  d3.select("#dropdown")[0][0].lastChild[group_ind].selected=true;
+  console.log();
 }
 
 function change_dropdown() {
@@ -133,9 +136,13 @@ function init_radios() {
 
 function init_axes() {
   svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis)
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis)
+    // .selectAll("text")
+    //   .attr("transform", function(d) {
+    //             return "rotate(-90)" 
+    //             });
     .append("text")
       .attr("x", 6)
       .attr("y", 16)
@@ -188,7 +195,11 @@ function filter_data(val) {
   x.domain(cur_data.sort(sorter).map(get_key));
   svg.select(".x.axis").transition()
       .duration(200)
-      .call(xAxis);
+      .call(xAxis)
+      .selectAll("text")
+      // .attr("transform", function(d) {
+      //           return "rotate(-90)" 
+      //           });
 
   y.domain([0, d3.max(cur_data, get_value)]);
   svg.select(".y.axis").transition()
@@ -203,7 +214,8 @@ function filter_data(val) {
 
   bar.transition()
     .duration(200)
-    .style("fill", function(d) { return color(get_group(d)); })
+    .style("fill", function(d) { return color(groups.indexOf(get_group(d))); })
+    // .style("fill", function(d) { return color(get_group(d)); })
     .attr("x", function(d) { return x(get_key(d)); })
     .attr("width", x.rangeBand())
     .attr("y", function(d) { return y(get_value(d)); })

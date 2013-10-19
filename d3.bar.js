@@ -243,7 +243,7 @@ function get_group(d) {
 }
 
 function sort_data_by_value(a, b) {
-  return b.val - a.val;
+  return a.val - b.val;
 }
 
 function sort_data_by_key(a, b) {
@@ -251,7 +251,7 @@ function sort_data_by_key(a, b) {
 }
 
 function sort_data_by_group(a, b) {
-  return b.group - a.group;
+  return a.group - b.group;
 }
 
 function sort_group(a, b) {
